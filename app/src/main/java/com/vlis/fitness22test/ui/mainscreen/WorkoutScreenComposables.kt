@@ -147,7 +147,7 @@ fun WorkoutPlanScreen(viewModel: WorkoutPlanViewModel = hiltViewModel()) {
                             Text(
                                 if (selectedDay.isCompleted)
                                     stringResource(R.string.redo_workout)
-                                else  stringResource(R.string.start_workout),
+                                else stringResource(R.string.start_workout),
                                 style = AppTypography.headlineSmall,
                                 fontStyle = FontStyle.Italic
                             )
@@ -280,7 +280,7 @@ fun DayTab(
 ) {
     Tab(
         model.isSelected,
-        { onClick(WorkoutIntentState.OnDaySelected(model.day)) },
+        onClick = { onClick(WorkoutIntentState.OnDaySelected(model.day)) },
         modifier = modifier
             .padding(horizontal = Spacing.xxs)
             .background(
@@ -331,21 +331,24 @@ fun WorkoutDay(
             modifier = Modifier.fillMaxSize(),
             colors = CardDefaults.cardColors(containerColor = AppColors.primaryContainer)
         ) {
-            if (model.isCompleted) {
-                Column(Modifier.fillMaxSize()) {
-                    Spacers.S()
-                    WorkoutDaySummary(model.summary, Modifier.align(Alignment.CenterHorizontally))
-                    Spacers.M()
-                    val itemMod = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = Spacing.xs)
-                    LazyColumn(Modifier.fillMaxSize()) {
-                        items(model.exercises.size) {
-                            ExcerciseRow(model.exercises[it], resolver, itemMod)
-                        }
+            Column(Modifier
+                .fillMaxSize()
+                .padding(vertical = Spacing.s, horizontal = Spacing.xs)) {
+                WorkoutDaySummary(model.summary, Modifier.align(Alignment.CenterHorizontally))
+                Spacers.M()
+                val itemMod = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Spacing.xs)
+                LazyColumn(Modifier.fillMaxSize()) {
+                    items(
+                        model.exercises.size,
+                        key = { model.exercises[it].id }
+                    ) {
+                        ExcerciseRow(model.exercises[it], resolver, itemMod)
                     }
                 }
             }
+
         }
     }
 }
@@ -387,7 +390,7 @@ fun SummaryRow(
     vector: ImageVector,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = vector,
             contentDescription = title,
@@ -405,7 +408,7 @@ fun ExcerciseRow(
     resolver: DrawableResolver,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         DynamicImage(
             model.thumbnail,
             resolver,
@@ -474,15 +477,14 @@ fun DynamicImage(
         )
     } else {
         val resId = remember(imageName) {
-            resolver.resolve(imageName)
+            val id = resolver.resolve(imageName)
+            if (id == null || id == 0) placeholderImgRes else id
         }
 
-        if (resId != null) {
-            Image(
-                painter = painterResource(resId),
-                contentDescription = contentDescription,
-                modifier
-            )
-        }
+        Image(
+            painter = painterResource(resId),
+            contentDescription = contentDescription,
+            modifier
+        )
     }
 }

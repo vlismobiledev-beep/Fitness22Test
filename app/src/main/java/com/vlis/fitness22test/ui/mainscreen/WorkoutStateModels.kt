@@ -23,6 +23,6 @@ data class DailyWorkoutUi(
     val exercises: List<ExerciseModel>,
     val summary: WorkoutSummary,
     val isSelected: Boolean = false,
-    val subtitle: String = "Foundations",
+    val subtitle: String = "Foundations"
     )
 
