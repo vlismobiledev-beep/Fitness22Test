@@ -62,6 +62,7 @@ import com.vlis.fitness22test.ui.theme.AppTypography
 import com.vlis.fitness22test.ui.theme.Spacers
 import com.vlis.fitness22test.ui.theme.Spacing
 import com.vlis.fitness22test.ui.utils.DrawableResolver
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -186,14 +187,14 @@ fun WorkoutSummaryChips(
     val mod = Modifier.padding(vertical = Spacing.xxs, horizontal = Spacing.xs)
     Row(modifier.horizontalScroll(rememberScrollState())) {
         InfoChip(
-            "Muscles",
+            stringResource(R.string.muscles),
             false,
             {},
             mod
         )
         Spacers.Xxs()
         InfoChip(
-            "45-60 Min",
+            stringResource(R.string.minutes_range_format, 45, 60),
             false,
             {},
             mod
@@ -311,18 +312,19 @@ fun WorkoutDay(
 ) {
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            "Week 1/5 - Foundations",
+            stringResource(R.string.week_range_format, 1, 5, model.subtitle),
             color = AppColors.secondary,
             style = AppTypography.labelSmall
         )
         Text(
             if (model.isCompleted)
-                "Workout completed".uppercase() else "Upcoming workout".uppercase(),
+                stringResource(R.string.workout_completed).uppercase(Locale.getDefault()) 
+            else stringResource(R.string.upcoming_workout).uppercase(Locale.getDefault()),
             style = AppTypography.headlineLarge,
             fontStyle = FontStyle.Italic,
         )
         Text(
-            "Push",
+            "Push", // TODO: Extract to domain/resource
             style = AppTypography.labelMedium
         )
         Spacers.M()
