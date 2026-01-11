@@ -318,7 +318,7 @@ fun WorkoutDay(
         )
         Text(
             if (model.isCompleted)
-                stringResource(R.string.workout_completed).uppercase(Locale.getDefault()) 
+                stringResource(R.string.workout_completed).uppercase(Locale.getDefault())
             else stringResource(R.string.upcoming_workout).uppercase(Locale.getDefault()),
             style = AppTypography.headlineLarge,
             fontStyle = FontStyle.Italic,
@@ -333,9 +333,11 @@ fun WorkoutDay(
             modifier = Modifier.fillMaxSize(),
             colors = CardDefaults.cardColors(containerColor = AppColors.primaryContainer)
         ) {
-            Column(Modifier
-                .fillMaxSize()
-                .padding(vertical = Spacing.s, horizontal = Spacing.xs)) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(vertical = Spacing.s, horizontal = Spacing.xs)
+            ) {
                 WorkoutDaySummary(model.summary, Modifier.align(Alignment.CenterHorizontally))
                 Spacers.M()
                 val itemMod = Modifier
@@ -416,9 +418,9 @@ fun ExcerciseRow(
             resolver,
             Modifier
                 .size(60.dp)
-                .background(Color.Unspecified, AppShapes.small)
+                .clip(AppShapes.small)
         )
-        Spacers.Xs()
+        Spacers.S()
         Column(modifier = Modifier.weight(1f)) {
             Text(model.name, style = AppTypography.bodyLarge, maxLines = 2)
             Spacers.Xxs()
@@ -450,7 +452,7 @@ fun ExcerciseRow(
             contentDescription = model.name,
             modifier = Modifier
                 .size(Spacing.xxl4)
-                .background(Color.Unspecified, CircleShape)
+                .clip(CircleShape)
         )
     }
 }

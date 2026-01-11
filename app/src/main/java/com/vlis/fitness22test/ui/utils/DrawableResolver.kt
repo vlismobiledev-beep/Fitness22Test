@@ -15,9 +15,9 @@ class DrawableResolver(
         val adjName = name.substringBefore('.')
 
         Log.d("DrawableResolver", "resolving $name, $adjName")
-        return cache.getOrPut(name.substringBefore('.')) {
+        return cache.getOrPut(adjName) {
             context.resources.getIdentifier(
-                name,
+                adjName,
                 "drawable",
                 context.packageName
             )
