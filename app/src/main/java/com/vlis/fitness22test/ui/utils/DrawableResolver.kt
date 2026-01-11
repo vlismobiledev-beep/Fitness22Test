@@ -11,7 +11,7 @@ class DrawableResolver(
 
     @DrawableRes
     fun resolve(name: String): Int? {
-        return cache.getOrPut(name) {
+        return cache.getOrPut(name.substringBefore('.')) {
             context.resources.getIdentifier(
                 name,
                 "drawable",

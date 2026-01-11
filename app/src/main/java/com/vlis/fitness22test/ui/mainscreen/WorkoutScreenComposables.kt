@@ -2,25 +2,33 @@ package com.vlis.fitness22test.ui.mainscreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -29,12 +37,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -43,7 +53,9 @@ import com.vlis.fitness22test.R
 import com.vlis.fitness22test.domain.ExerciseModel
 import com.vlis.fitness22test.domain.MuscleGroup
 import com.vlis.fitness22test.domain.WorkoutSummary
+import com.vlis.fitness22test.ui.icons.BootstrapChevronDown
 import com.vlis.fitness22test.ui.icons.BootstrapLightning
+import com.vlis.fitness22test.ui.icons.MaterialIconsDone
 import com.vlis.fitness22test.ui.theme.AppColors
 import com.vlis.fitness22test.ui.theme.AppShapes
 import com.vlis.fitness22test.ui.theme.AppTypography
@@ -78,7 +90,7 @@ fun WorkoutPlanScreen(viewModel: WorkoutPlanViewModel = hiltViewModel()) {
 
         val modDef = Modifier
             .padding(it)
-            .padding(horizontal = Spacing.xs)
+            .padding(horizontal = Spacing.s)
 
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -94,35 +106,52 @@ fun WorkoutPlanScreen(viewModel: WorkoutPlanViewModel = hiltViewModel()) {
             )
 
             is WorkoutUiState.Success -> {
-                // Tabs
-                WorkoutSummaryChips(
-                    modDef
-                )
-
-                val selectedDay = state.days.first { it.isSelected }
-
-                Box(
-                    modDef.fillMaxSize()
-                ) {
-                    WorkoutDay(
-                        selectedDay, resolver,
-                        Modifier.fillMaxSize()
+                Column(modDef.fillMaxSize()) {
+                    // Tabs
+                    Spacers.S()
+                    WorkoutSummaryChips()
+                    Spacers.S()
+                    WorkoutDaysTabs(
+                        state.days,
+                        viewModel::handleIntent,
+                        Modifier.align(Alignment.CenterHorizontally)
                     )
+                    Spacers.M()
+                    val selectedDay = state.days.first { it.isSelected }
 
-                    Button(
-                        {
-                            viewModel.handleIntent(WorkoutIntentState.OnStartWorkoutClicked)
-                        },
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .widthIn(min = 250.dp)
-                            .padding(bottom = Spacing.xxl4)
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
                     ) {
-                        Text(
-                            if (selectedDay.isCompleted)
-                                stringResource(R.string.start_workout)
-                            else stringResource(R.string.redo_workout)
+                        WorkoutDay(
+                            selectedDay,
+                            resolver,
+                            Modifier.matchParentSize()
                         )
+
+                        Button(
+                            {
+                                viewModel.handleIntent(WorkoutIntentState.OnStartWorkoutClicked)
+                            },
+                            shape = AppShapes.medium,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .widthIn(min = 250.dp)
+                                .padding(bottom = Spacing.xxl4),
+                            colors = buttonColors(
+                                containerColor = AppColors.tertiary,
+                                contentColor = AppColors.onPrimary
+                            )
+                        ) {
+                            Text(
+                                if (selectedDay.isCompleted)
+                                    stringResource(R.string.redo_workout)
+                                else  stringResource(R.string.start_workout),
+                                style = AppTypography.headlineSmall,
+                                fontStyle = FontStyle.Italic
+                            )
+                        }
                     }
                 }
             }
@@ -154,14 +183,42 @@ fun Error(message: String, modifier: Modifier = Modifier) {
 fun WorkoutSummaryChips(
     modifier: Modifier = Modifier
 ) {
-
-    Row {
+    val mod = Modifier.padding(vertical = Spacing.xxs, horizontal = Spacing.xs)
+    Row(modifier.horizontalScroll(rememberScrollState())) {
+        InfoChip(
+            "Muscles",
+            false,
+            {},
+            mod
+        )
+        Spacers.Xxs()
+        InfoChip(
+            "45-60 Min",
+            false,
+            {},
+            mod
+        )
+        Spacers.Xxs()
         InfoChip(
             stringResource(R.string.schedule),
             false,
-            {}
+            {},
+            mod
         )
-
+        Spacers.Xxs()
+        InfoChip(
+            stringResource(R.string.schedule),
+            false,
+            {},
+            mod
+        )
+        Spacers.Xxs()
+        InfoChip(
+            stringResource(R.string.schedule),
+            false,
+            {},
+            mod
+        )
     }
 }
 
@@ -172,14 +229,78 @@ fun InfoChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    FilterChip(isSelected, onClick, modifier = modifier, label = {
-        Text(text, style = AppTypography.labelSmall)
-    })
+    FilterChip(
+        isSelected,
+        onClick,
+        modifier = modifier,
+        shape = AppShapes.medium,
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = AppColors.primaryContainer,
+            labelColor = AppColors.primary,
+        ),
+        label = {
+            Text(text, style = AppTypography.bodyMedium)
+        },
+        border = null,
+        trailingIcon = {
+            Icon(
+                imageVector = BootstrapChevronDown,
+                contentDescription = text,
+                modifier = Spacers.spacerSModifier
+            )
+        }
+    )
 }
 
 @Composable
-fun WorkoutDaysTabs(modifier: Modifier = Modifier) {
+fun WorkoutDaysTabs(
+    days: List<DailyWorkoutUi>,
+    onClick: (WorkoutIntentState) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    SecondaryScrollableTabRow(
+        days.indexOfFirst { it.isSelected },
+        modifier,
+        indicator = { },
+        divider = {},
+        containerColor = Color.Unspecified,
+        edgePadding = 0.dp,
+    ) {
+        days.forEach {
+            DayTab(it, onClick)
+        }
+    }
+}
 
+@Composable
+fun DayTab(
+    model: DailyWorkoutUi,
+    onClick: (WorkoutIntentState) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Tab(
+        model.isSelected,
+        { onClick(WorkoutIntentState.OnDaySelected(model.day)) },
+        modifier = modifier
+            .padding(horizontal = Spacing.xxs)
+            .background(
+                color = if (model.isSelected) AppColors.primaryContainer else AppColors.onPrimary,
+                shape = CircleShape
+            )
+            .heightIn(36.dp)
+            .widthIn(60.dp)
+            .clip(CircleShape),
+    ) {
+        if (model.isCompleted) {
+            Icon(
+                imageVector = MaterialIconsDone,
+                contentDescription = null,
+                tint = AppColors.secondary
+            )
+        } else {
+            Text(stringResource(R.string.day_tab, model.day.day), color = AppColors.secondary)
+        }
+    }
 }
 
 @Composable
@@ -188,23 +309,40 @@ fun WorkoutDay(
     resolver: DrawableResolver,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier) {
-        Text("Week 1/5 - Foundations")
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            "Week 1/5 - Foundations",
+            color = AppColors.secondary,
+            style = AppTypography.labelSmall
+        )
         Text(
             if (model.isCompleted)
-                "Workout completed".uppercase() else "Upcoming workout".uppercase()
+                "Workout completed".uppercase() else "Upcoming workout".uppercase(),
+            style = AppTypography.headlineLarge,
+            fontStyle = FontStyle.Italic,
         )
+        Text(
+            "Push",
+            style = AppTypography.labelMedium
+        )
+        Spacers.M()
 
-        Card(Modifier.fillMaxSize()) {
-            Column(Modifier.fillMaxSize()) {
-                WorkoutDaySummary(model.summary, Modifier.align(Alignment.CenterHorizontally))
-                Spacers.M()
-                val itemMod = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = Spacing.xxs)
-                LazyColumn(Modifier.fillMaxSize()) {
-                    items(model.exercises.size) {
-                        ExcerciseRow(model.exercises[it], resolver, itemMod)
+        Card(
+            modifier = Modifier.fillMaxSize(),
+            colors = CardDefaults.cardColors(containerColor = AppColors.primaryContainer)
+        ) {
+            if (model.isCompleted) {
+                Column(Modifier.fillMaxSize()) {
+                    Spacers.S()
+                    WorkoutDaySummary(model.summary, Modifier.align(Alignment.CenterHorizontally))
+                    Spacers.M()
+                    val itemMod = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = Spacing.xs)
+                    LazyColumn(Modifier.fillMaxSize()) {
+                        items(model.exercises.size) {
+                            ExcerciseRow(model.exercises[it], resolver, itemMod)
+                        }
                     }
                 }
             }
@@ -253,8 +391,8 @@ fun SummaryRow(
         Icon(
             imageVector = vector,
             contentDescription = title,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp)
+            tint = AppColors.onPrimary,
+            modifier = Modifier.size(Spacing.m)
         )
         Spacers.Xxs()
         Text(title, style = AppTypography.bodyLarge)
@@ -272,7 +410,7 @@ fun ExcerciseRow(
             model.thumbnail,
             resolver,
             Modifier
-                .size(50.dp)
+                .size(60.dp)
                 .background(Color.Unspecified, AppShapes.small)
         )
         Spacers.Xs()
@@ -306,7 +444,7 @@ fun ExcerciseRow(
             painterResource(model.muscleGroup.getImgRes()),
             contentDescription = model.name,
             modifier = Modifier
-                .size(Spacing.xxl3)
+                .size(Spacing.xxl4)
                 .background(Color.Unspecified, CircleShape)
         )
     }
