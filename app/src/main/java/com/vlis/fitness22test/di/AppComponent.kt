@@ -1,7 +1,6 @@
 package com.vlis.fitness22test.di
 
 import com.vlis.fitness22test.data.ResourceProvider
-import com.vlis.fitness22test.data.WorkoutRepository
 import com.vlis.fitness22test.data.WorkoutRepositoryImpl
 import dagger.Module
 import dagger.Provides
@@ -13,17 +12,14 @@ import kotlinx.serialization.json.Json
 @Module
 object AppModule {
 
-    @Provides
-    fun providesJson() = Json
 
     @Provides
     fun provideWorkoutRepository(
         resourceProvider: ResourceProvider,
-        json: Json
-    ): WorkoutRepository {
+    ): WorkoutRepositoryImpl {
         return WorkoutRepositoryImpl(
             resourceProvider,
-            json = json,
+            json = Json,
             "workouts.json"
         )
     }

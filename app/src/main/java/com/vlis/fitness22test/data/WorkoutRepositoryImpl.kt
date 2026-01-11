@@ -1,9 +1,9 @@
 package com.vlis.fitness22test.data
 
-import com.vlis.fitness22test.domain.DailyWorkout
+import com.vlis.fitness22test.domain.DailyWorkoutModel
+import com.vlis.fitness22test.domain.Day
 import com.vlis.fitness22test.domain.ExerciseModel
 import com.vlis.fitness22test.domain.MuscleGroup
-import com.vlis.fitness22test.domain.WorkoutDay
 import com.vlis.fitness22test.domain.WorkoutPlan
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
@@ -40,9 +40,9 @@ class WorkoutRepositoryImpl @Inject constructor(
 }
 
 // Extension functions for cleaner mapping
-private fun WorkoutsResponse.Workout.toDomain(index: Int): DailyWorkout {
-    return DailyWorkout(
-        day = WorkoutDay(this.day ?: (index + 1)),
+private fun WorkoutsResponse.Workout.toDomain(index: Int): DailyWorkoutModel {
+    return DailyWorkoutModel(
+        day = Day(this.day ?: (index + 1)),
         exercises = this.workout?.mapNotNull { it?.toDomain() } ?: emptyList()
     )
 }

@@ -2,11 +2,13 @@ package com.vlis.fitness22test.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
 
 private val lightColorScheme = lightColorScheme(
@@ -84,3 +86,18 @@ fun Fitness22TestTheme(
         content = content
     )
 }
+
+val AppColors: ColorScheme
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.colorScheme
+
+val AppTypography: androidx.compose.material3.Typography
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.typography
+
+val AppShapes: androidx.compose.material3.Shapes
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.shapes

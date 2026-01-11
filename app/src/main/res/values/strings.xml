@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">Fitness22Test</string>
+
+    <!-- Time / Period -->
+    <string name="day">Day</string>
+    <string name="week">Week</string>
+    <string name="schedule">Schedule</string>
+
+    <!-- Workout -->
+    <string name="my_workout">My Workout</string>
+    <string name="muscles">Muscles</string>
+    <string name="exercises">Exercises</string>
+    <string name="upcoming_workout">Upcoming Workout</string>
+    <string name="start_workout">Start Workout</string>
+    <string name="redo_workout">Redo Workout</string>
+
+
+    <!-- Units -->
+    <string name="minutes_short_ct">%d Min</string>
+    <string name="calories_short_ct">%d Cal</string>
+
+    <!-- Plurals -->
+    <plurals name="exercise_count">
+        <item quantity="one">%d exercise</item>
+        <item quantity="other">%d exercises</item>
+    </plurals>
+
+    <plurals name="set_count">
+        <item quantity="one">%d set</item>
+        <item quantity="other">%d sets</item>
+    </plurals>
+
+    <string name="reps_count">x %s reps</string>
+
+
+    <string name="lb_ct">x %s lb</string>
 </resources>

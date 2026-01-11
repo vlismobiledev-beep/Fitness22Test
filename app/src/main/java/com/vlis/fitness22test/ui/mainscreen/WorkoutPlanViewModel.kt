@@ -14,24 +14,63 @@ import javax.inject.Inject
 class WorkoutPlanViewModel @Inject constructor(
     val useCase: GetWorkoutPlanUseCase
 ) : ViewModel() {
-    val uiState: StateFlow<WorkoutState>
-        field : MutableStateFlow<WorkoutState> = MutableStateFlow(WorkoutState.Loading)
+    val uiState: StateFlow<WorkoutUiState>
+        field : MutableStateFlow<WorkoutUiState> = MutableStateFlow(WorkoutUiState.Loading)
+
+    init {
+        loadData()
+    }
 
     private fun loadData() {
         viewModelScope.launch {
             useCase()
                 .onSuccess { plan ->
-                    uiState.value = WorkoutState.Success(plan)
+                    uiState.value = plan.toUiState()
                 }
                 .onFailure {
-                    uiState.value = WorkoutState.Error(it.message ?: "Unknown error")
+                    uiState.value = WorkoutUiState.Error(it.message ?: "Unknown error")
                 }
         }
     }
-}
 
-sealed interface WorkoutState {
-    data object Loading : WorkoutState
-    data class Error(val message: String) : WorkoutState
-    data class Success(val workoutPlan: WorkoutPlan) : WorkoutState
+    private fun WorkoutPlan.toUiState(): WorkoutUiState.Success {
+        val daysUi = days.mapIndexed { i,day ->
+            DailyWorkoutUi(
+                day = day.day,
+                exercises = day.exercises,
+                isSelected = i == 0,
+                isCompleted = i == 0,
+                summary = day.summary
+            )
+        }
+
+        val summary = WorkoutPlanSummary(
+            totalExercises = days.sumOf { it.exercises.size },
+            totalCalories = days.sumOf { it.exercises.size * 100 },
+            totalMinutes = days.sumOf { it.exercises.size * 10 }
+        )
+
+        return WorkoutUiState.Success(
+            days = daysUi,
+            summary = summary
+        )
+    }
+
+    fun handleIntent(intentState: WorkoutIntentState){
+        when(intentState){
+            is WorkoutIntentState.OnDaySelected -> {
+                val currentState = uiState.value
+                if (currentState is WorkoutUiState.Success) {
+                    val updatedDays = currentState.days.map { dayUi ->
+                        dayUi.copy(isSelected = dayUi.day == intentState.day)
+                    }
+
+                    uiState.value = currentState.copy(days = updatedDays)
+                }
+            }
+            is WorkoutIntentState.OnStartWorkoutClicked -> {
+
+            }
+        }
+    }
 }
